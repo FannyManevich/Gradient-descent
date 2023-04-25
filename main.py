@@ -12,7 +12,6 @@ def loadData(filename):
     # print("Read " + str(rows) + " rows")
     return D, Y
 
-
 # -- 2 --
 def selectSingle(D, n):
     return D[:, n]
