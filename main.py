@@ -14,24 +14,22 @@ def loadData(filename):
 
 # -- 2 --
 def selectSingle(D, n):
+    #-- Selecting a single column --
     return D[:, n]
 
 
 def addOnesColumn(D):
     new_d = D.reshape(-1, 1)
 
-    # add a column of 1's
+    #-- add a column of 1's --
     ones_column = np.ones((new_d.shape[0], 1), dtype=int)
     return np.hstack((ones_column, new_d))
 
 
 # -- 3 --
-def predictValue(example, hypothesis):
-    value = example[0] * hypothesis[0] + example[1] * hypothesis[1]
-    return value
-
-
-
+def predictValue(rowD1, hypothesis):
+    #-- Multiplication of two Matrices --
+    return np.dot(rowD1, hypothesis)
 
 def main():
     # -- 1 --
@@ -53,15 +51,15 @@ def main():
     # plt.show()
 
     # -- 2 --
-    # vector = np.vectorize(np.int_)
-    # print(vector(addOnesColumn(selectSingle(D, 0))))
+    #-- Adding a left unity column --
+    vector = np.vectorize(np.int_)
+    D1 = vector(addOnesColumn(selectSingle(D, 0)))
 
     # -- 3 --
-    example = selectSingle(D, 1)
-    print(example)
+    rowD1 = D1[0, :]
     hypothesis = [1, 1]
-    print(hypothesis)
-    print(predictValue(example, hypothesis))
+    value = predictValue(rowD1, hypothesis)
+    print(value)
 
 if __name__ == '__main__':
     main()
