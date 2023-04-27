@@ -28,13 +28,23 @@ def addOnesColumn(D):
 
 # -- 3 --
 def predictValue(rowD1, hypothesis):
-    #-- Multiplication of two Matrices --
+    # -- Multiplication of two Matrices --
     return np.dot(rowD1, hypothesis)
+
+# -- 4 --
+def computeErrors(Data, Y, Hypothesis):
+    if Data.shape[0] == Y.shape[0] :
+        # -- Number of examples for study --
+        m = Data.shape[0]
+        # -- Vector of the prediction errors of the hypothesis --
+        Errors = np.zeros(m)
+        for i in range(m):
+            Errors = np.insert(Errors, i, (predictValue(i, Hypothesis) - Y[i]))
+    return Errors
 
 def main():
     # -- 1 --
     D, Y = loadData("smartphone.txt")
-
     # x1 = D[:, 0]
     # x2 = D[:, 1]
 
@@ -50,16 +60,23 @@ def main():
     # plt.title('Age VS New price')
     # plt.show()
 
-    # -- 2 --
-    #-- Adding a left unity column --
+    # # -- 2 --
+    # -- Adding a left unity column --
     vector = np.vectorize(np.int_)
     D1 = vector(addOnesColumn(selectSingle(D, 0)))
 
-    # -- 3 --
-    rowD1 = D1[0, :]
-    hypothesis = [1, 1]
-    value = predictValue(rowD1, hypothesis)
-    print(value)
+    # # -- 3 --
+    # rowD1 = D1[0, :]
+    # hypothesis = [1, 1]
+    # value = predictValue(rowD1, hypothesis)
+    # print(value)
+
+    # -- 4 --
+    Data = vector(addOnesColumn(selectSingle(D, 0)))
+    # -- Creating hypothesis vector of zeros
+    Hypothesis = np.zeros(Data.shape[0])
+    print((computeErrors(Data, Y, Hypothesis)[:, np.newaxis]))
+
 
 if __name__ == '__main__':
     main()
