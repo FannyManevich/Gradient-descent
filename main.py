@@ -80,7 +80,7 @@ def gradientDescent(filename, alpha, max_iter, threshold):
         threshold = 0.001
     cost_J = math.inf
     iter = 1
-    Costs = np.empty(0)
+    Costs = np.empty(max_iter)
 
     # -- 1 --
     # -- Loading data from file --
@@ -109,26 +109,25 @@ def gradientDescent(filename, alpha, max_iter, threshold):
 
     Hypothesis = np.zeros(D.shape[0])
 
-    while(iter < max_iter):
-
+    while iter < max_iter &  Costs[iter] < threshold:
         # -- 4 --
         Data = vector(addOnesColumn(selectSingle(D, 0)))
         # -- Creating hypothesis vector of zeros
         Errors = (computeErrors(Data, Y, Hypothesis)[:, np.newaxis])
-
+        # -- 5 --
+        Costs.append(computeCost(Data, Y, Hypothesis))
+        # -- 6 --
+        Gradient = computeGradient(Data, Errors)
+        # -- 7 --
+        Hypothesis = updateHypothsis(Hypothesis, alpha, Gradient)
         iter = iter + 1
 
+    print("Gradient descent terminating after {} iterations. Improvement was :  {} -below threshold  {}".format(iter, threshold -  Costs[iter], threshold))
+
+    return Hypothesis, Costs
 def main():
 
-
-    # -- 3 --
-    # rowD1 = D1[0, :]
-    # hypothesis = [1, 1]
-    # value = predictValue(rowD1, hypothesis)
-    # print(value)
-
-
-
+    gradientDescent("smartphone", 0.1, 1000, 0.001)
 
 if __name__ == '__main__':
     main()
