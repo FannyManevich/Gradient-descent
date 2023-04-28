@@ -107,25 +107,26 @@ def gradientDescent(filename, alpha, max_iter, threshold):
     vector = np.vectorize(np.int_)
     D = vector(addOnesColumn(selectSingle(D, 0)))
 
-    Hypothesis = [0.0, 0.0]
+    Hypothesis = np.zeros(D.shape[0])
 
-    do{
-        
-    }while(iter < max_iter):
+    while(iter < max_iter):
+
+        # -- 4 --
+        Data = vector(addOnesColumn(selectSingle(D, 0)))
+        # -- Creating hypothesis vector of zeros
+        Errors = (computeErrors(Data, Y, Hypothesis)[:, np.newaxis])
+
+        iter = iter + 1
+
 def main():
 
 
-    # # -- 3 --
+    # -- 3 --
     # rowD1 = D1[0, :]
     # hypothesis = [1, 1]
     # value = predictValue(rowD1, hypothesis)
     # print(value)
 
-    # -- 4 --
-    Data = vector(addOnesColumn(selectSingle(D, 0)))
-    # -- Creating hypothesis vector of zeros
-    Hypothesis = np.zeros(Data.shape[0])
-    print((computeErrors(Data, Y, Hypothesis)[:, np.newaxis]))
 
 
 
