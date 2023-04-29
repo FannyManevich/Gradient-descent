@@ -1,6 +1,3 @@
-# Fany Manevich 206116725
-# Ilona Grand 316179548
-
 import numpy as np
 import math
 import matplotlib.pyplot as plt
