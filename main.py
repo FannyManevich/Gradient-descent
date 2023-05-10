@@ -1,3 +1,6 @@
+# Fany Manevich 206116725
+# Ilona Grand 316179548
+
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -8,24 +11,24 @@ from decimal import *
 def loadData(filename):
     data = np.loadtxt(filename)
     rows, fs = data.shape
-    D = data[:, :fs-1]
-    Y = data[:, fs-1]
+    D = data[:, :fs - 1]
+    Y = data[:, fs - 1]
     print("Read " + str(rows) + " rows")
     return D, Y
 
 
 # -- 2 --
 def selectSingle(D, n):
-    #-- Selecting a single column --
+    # -- Selecting a single column --
     return D[:, n]
 
 
 def addOnesColumn(D):
-    # new_d = D.reshape(-1, 1)
+    new_d = D.reshape(-1, 1)
 
-    #-- add a column of 1's --
-    ones_column = np.ones((D.shape[0], 1), dtype=int)
-    return np.hstack((ones_column, D))
+    # -- add a column of 1's --
+    ones_column = np.ones((new_d.shape[0], 1), dtype=int)
+    return np.hstack((ones_column, new_d))
 
 
 # -- 3 --
@@ -36,11 +39,10 @@ def predictValue(rowD1, hypothesis):
 
 # -- 4 --
 def computeErrors(Data, Y, Hypothesis):
-
     # -- Number of examples for study --
     m = Data.shape[0]
     errors = np.array([])
-    
+
     if Data.shape[0] == Y.shape[0]:
         # -- Vector of the prediction errors of the hypothesis --
         for i in range(m):
@@ -66,7 +68,7 @@ def computeGradient(Data, Errors):
     grad_vector = []
     vector = np.vectorize(np.float_)
     for j in range(n):
-        sum = 0 
+        sum = 0
         for i in range(m):
             sum += ((Data[i][j]) * Errors[i])
         grad_vector.append(sum / m)
@@ -104,30 +106,28 @@ def gradientDescent(filename, alpha, max_iter, threshold):
     x2 = D[:, 1]
 
     # -- Graph 1 --
-    plt.scatter(x1, Y)
-    plt.xlabel('x  Original price')
-    plt.ylabel('y  New price')
-    plt.title('Original price VS New price')
-    plt.show()
-
-    # -- Graph 2 --
-    plt.scatter(x2, Y)
-    plt.xlabel('x Age')
-    plt.ylabel('y New price')
-    plt.title('Age VS New price')
-    plt.show()
+    # plt.scatter(x1, Y)
+    # plt.xlabel('x  Original price')
+    # plt.ylabel('y  New price')
+    # plt.title('Original price VS New price')
+    # plt.show()
+    #
+    # # -- Graph 2 --
+    # plt.scatter(x2, Y)
+    # plt.xlabel('x Age')
+    # plt.ylabel('y New price')
+    # plt.title('Age VS New price')
+    # plt.show()
 
     # -- 2 --
     # -- Adding a left unity column --
     vector = np.vectorize(np.int_)
-    D = vector(addOnesColumn(D))
+    Data = vector(addOnesColumn(selectSingle(D, 1)))
 
-    Hypothesis = np.zeros(3)
+    Hypothesis = np.zeros(2)
 
     while iter < max_iter:
-        print(iter)
         # -- 4 --
-        Data = D
         # -- Creating hypothesis vector of zeros
         # Errors = (computeErrors(Data, Y, Hypothesis)[:, np.newaxis])
         Errors = (computeErrors(Data, Y, Hypothesis))
@@ -137,19 +137,22 @@ def gradientDescent(filename, alpha, max_iter, threshold):
         Gradient = computeGradient(Data, Errors)
         # -- 7 --
         Hypothesis = updateHypothsis(Hypothesis, alpha, Gradient)
-        if abs(costs[iter-1] - costs[iter]) < threshold:
-            print(f"Breaking loop because improvement is under threshold. {costs[iter-1] - costs[iter]} < {threshold}")
+        if abs(costs[iter - 1] - costs[iter]) < threshold:
+            print(
+                f"Breaking loop because improvement is under threshold. {costs[iter - 1] - costs[iter]} < {threshold}")
             break
         iter = iter + 1
 
-    print("Gradient descent terminating after {} iterations. Improvement was :  {} -below threshold  {}".format(iter, abs(costs[iter-1] - costs[iter]), threshold))
+    print("Gradient descent terminating after {} iterations. Improvement was :  {} -below threshold  {}".format(iter,
+                                                                                                                abs(
+                                                                                                                    costs[
+                                                                                                                        iter - 1] -
+                                                                                                                    costs[
+                                                                                                                        iter]),
+                                                                                                                threshold))
     costs = np.delete(costs, [0])
-    # Hypothesis, cost, x = gradientDescent(
-    #     'smartphone.txt', 0.05, 2000, 0.0001)  # calculate gradient descent
 
     x = np.arange(max_iter)
-    print(f"size of x: {np.shape(x)}")
-    print(f"size of x: {np.shape(costs)}")
     plt.scatter(x, costs)
     plt.xlabel("x - Iteration")
     plt.ylabel("y - Cost")
