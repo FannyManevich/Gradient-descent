@@ -10,14 +10,38 @@ import math
 # -- 1.1 --
 # -- calculating sigmoid g(z)
 def sigmoid(z):
-    return 1 / (1 + np.exp(-z))
+    # z is scalar
+    if z.ndim == 0:
+        return 1 / (1 + np.exp(-z))
+
+    # z is vector
+    elif z.ndim == 1:
+            # creating new vector
+            newZ = np.empty(z.size)
+
+            # applying the sigmoid function on each cell
+            for i in range(z.size):
+                sig = 1 / (1 + np.exp(-z[i]))
+                newZ[i] = sig
+            return newZ
+    # z is matrix
+    else:
+        # creating new matrix
+        newZ = np.empty(z.shape)
+
+        # applying the sigmoid function on each cell
+        for i in range(z.shape[0]):
+            for j in range(z.shape[1]):
+                sig = 1 / (1 + np.exp(-z[i][j]))
+                newZ[i][j] = sig
+        return newZ
+
 
 
 # -- 1.2 --
 def predictValue(Example, Hypothesis):
     # -- Multiplication of two Matrices --
     h = np.dot(Example, Hypothesis)
-
     return sigmoid(h)
 
 
@@ -66,18 +90,19 @@ def main():
 
     # -- Adding a left unity column --
     vector = np.vectorize(np.float_)
-    D = vector(addOnesColumn(selectSingle(D, 2)))
+    D = vector(addOnesColumn(selectSingle(D, 0)))
 
     # -- 1 --
     # -- checking --
     # matrix1 = np.array([[1, 2, 3], [4, 5, 6]])
     # matrix2 = np.array([[-1, -2, -3], [-4, -5, -6]])
 
-    print(predictValue(Y, x1))
+    Hypothesis = np.zeros(x1.shape)
+    print(predictValue(x1, Hypothesis))
 
     # -- 2.1 --
     Hypothesis = [-10, 0.8, 0.08]
-    print(computeCostAndGradient(D, Y, Hypothesis))
+    # print(computeCostAndGradient(D, Y, Hypothesis))
 
 if __name__ == '__main__':
     main()
