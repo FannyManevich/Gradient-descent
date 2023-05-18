@@ -14,11 +14,7 @@ def loadData(filename):
     Y = data[:, fs - 1]
     return D, Y
 def addOnesColumn(D):
-    new_d = D.reshape(-1, 1)
-
-    # -- add a column of 1's --
-    ones_column = np.ones((new_d, 1), dtype=float)
-    return np.concatenate((ones_column, D), axis=1)
+    return np.insert(D, 0, values=1, axis=1)
 
 # -- 1.1 --
 # -- calculating sigmoid g(z)
