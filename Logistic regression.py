@@ -1,5 +1,5 @@
 import numpy as np
-import math
+
 
 
 # Fany Manevich 206116725
@@ -13,6 +13,8 @@ def loadData(filename):
     D = data[:, [0, 1]]
     Y = data[:, fs - 1]
     return D, Y
+
+# -- add a column of 1's --
 def addOnesColumn(D):
     return np.insert(D, 0, values=1, axis=1)
 
@@ -58,24 +60,24 @@ def predictValue(Example, Hypothesis):
 def computeCostAndGradient(D, Y, Hypothesis):
     J = 0
     m = Y.shape[0]
-    Gradient = np.zeros(D.shape[0])
+    Gradient = np.zeros(Hypothesis.shape)
 
     for i in range(m):
         # prediction value
         h = predictValue(D[i], Hypothesis)
 
-        if h == 0 or (1 - h) == 0:
+        if np.any(h == 0) or np.any((1 - h) == 0):
             h = 0.0001
 
         # calculating the price
-        J += (-Y[i] * math.log(h) - (1 - Y[i]) * math.log(1 - h))
+        J += (-Y[i] * np.log(h) - (1 - Y[i]) * np.log(1 - h))
 
         # calculating the error i
         error = h - Y[i]
 
         # updating gradient matrix
-        for j in range(D[0].shape):
-            Gradient[j] += error * D[i][j]
+        for j in range(D.shape[i]):
+            Gradient[j] += np.multiply(error, D[i][j])
 
         J /= m
         Gradient /= m
@@ -94,10 +96,11 @@ def main():
     # -- 0 --
     # -- Loading data from file --
     D, Y = loadData('ex2data1.txt')
+
     # -- Adding a left unity column --
     vector = np.vectorize(np.float_)
     D = vector(addOnesColumn(D))
-    print(D)
+
 
     # -- 1 --
     # -- checking --
@@ -108,9 +111,8 @@ def main():
     print(predictValue(D, Hypothesis))
 
     # -- 2.1 --
-    Hypothesis = [-10, 0.8, 0.08]
-
-    # print(computeCostAndGradient(D, Y, Hypothesis))
+    Hypothesis = np.array([-10, 0.8, 0.08])
+    print(computeCostAndGradient(D, Y, Hypothesis))
 
 if __name__ == '__main__':
     main()
