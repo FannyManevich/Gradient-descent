@@ -106,18 +106,18 @@ def gradientDescent(filename, alpha, max_iter, threshold):
     x2 = D[:, 1]
 
     # -- Graph 1 --
-    # plt.scatter(x1, Y)
-    # plt.xlabel('x  Original price')
-    # plt.ylabel('y  New price')
-    # plt.title('Original price VS New price')
-    # plt.show()
-    #
+    plt.scatter(x1, Y)
+    plt.xlabel('x  Original price')
+    plt.ylabel('y  New price')
+    plt.title('Original price VS New price')
+    plt.show()
+
     # # -- Graph 2 --
-    # plt.scatter(x2, Y)
-    # plt.xlabel('x Age')
-    # plt.ylabel('y New price')
-    # plt.title('Age VS New price')
-    # plt.show()
+    plt.scatter(x2, Y)
+    plt.xlabel('x Age')
+    plt.ylabel('y New price')
+    plt.title('Age VS New price')
+    plt.show()
 
     # -- 2 --
     # -- Adding a left unity column --
@@ -129,7 +129,7 @@ def gradientDescent(filename, alpha, max_iter, threshold):
     while iter < max_iter:
         # -- 4 --
         # -- Creating hypothesis vector of zeros
-        # Errors = (computeErrors(Data, Y, Hypothesis)[:, np.newaxis])
+        Errors = (computeErrors(Data, Y, Hypothesis)[:, np.newaxis])
         Errors = (computeErrors(Data, Y, Hypothesis))
         # -- 5 --
         costs = np.append(costs, computeCost(Data, Y, Hypothesis))

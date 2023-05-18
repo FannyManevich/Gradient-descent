@@ -1,11 +1,24 @@
-from main import addOnesColumn
-from main import selectSingle
 import numpy as np
 import math
 
 
 # Fany Manevich 206116725
 # Ilona Grand 316179548
+
+# -- 0 --
+# -- Loading data from file --
+def loadData(filename):
+    data = np.genfromtxt('ex2data1.txt', dtype=float, delimiter=',')
+    fs = data.shape[1]
+    D = data[:, [0, 1]]
+    Y = data[:, fs - 1]
+    return D, Y
+def addOnesColumn(D):
+    new_d = D.reshape(-1, 1)
+
+    # -- add a column of 1's --
+    ones_column = np.ones((new_d, 1), dtype=float)
+    return np.concatenate((ones_column, D), axis=1)
 
 # -- 1.1 --
 # -- calculating sigmoid g(z)
@@ -41,7 +54,7 @@ def sigmoid(z):
 # -- 1.2 --
 def predictValue(Example, Hypothesis):
     # -- Multiplication of two Matrices --
-    h = np.dot(Example, Hypothesis)
+    h = Example * Hypothesis
     return sigmoid(h)
 
 
@@ -54,6 +67,9 @@ def computeCostAndGradient(D, Y, Hypothesis):
     for i in range(m):
         # prediction value
         h = predictValue(D[i], Hypothesis)
+
+        if h == 0 or (1 - h) == 0:
+            h = 0.0001
 
         # calculating the price
         J += (-Y[i] * math.log(h) - (1 - Y[i]) * math.log(1 - h))
@@ -72,36 +88,32 @@ def computeCostAndGradient(D, Y, Hypothesis):
 # # -- 2.2 --
 #
 # # -- 4 --
-# def updateHypothsis(Hypothesis, alpha, Gradient):
-#
-#     return newHypo
+def updateHypothsis(Hypothesis, alpha, Gradient):
+    newHypo = Hypothesis - alpha * Gradient
+    return newHypo
 # # -- 5 --
 # def gradientDescent(Data, Y, Hypothesis, alpha, max_iter, threshold):
 
 def main():
     # -- 0 --
     # -- Loading data from file --
-    data = np.genfromtxt('ex2data1.txt', dtype=float, delimiter=',')
-    fs = data.size
-    D = data[:, :fs - 1]
-    x1 = D[:, 0]
-    x2 = D[:, 1]
-    Y = D[:, 2]
-
+    D, Y = loadData('ex2data1.txt')
     # -- Adding a left unity column --
     vector = np.vectorize(np.float_)
-    D = vector(addOnesColumn(selectSingle(D, 0)))
+    D = vector(addOnesColumn(D))
+    print(D)
 
     # -- 1 --
     # -- checking --
     # matrix1 = np.array([[1, 2, 3], [4, 5, 6]])
     # matrix2 = np.array([[-1, -2, -3], [-4, -5, -6]])
 
-    Hypothesis = np.zeros(x1.shape)
-    print(predictValue(x1, Hypothesis))
+    Hypothesis = np.zeros(D.shape)
+    print(predictValue(D, Hypothesis))
 
     # -- 2.1 --
     Hypothesis = [-10, 0.8, 0.08]
+
     # print(computeCostAndGradient(D, Y, Hypothesis))
 
 if __name__ == '__main__':
