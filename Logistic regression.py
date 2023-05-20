@@ -1,7 +1,6 @@
 import numpy as np
 
 
-
 # Fany Manevich 206116725
 # Ilona Grand 316179548
 
@@ -14,9 +13,11 @@ def loadData(filename):
     Y = data[:, fs - 1]
     return D, Y
 
+
 # -- add a column of 1's --
 def addOnesColumn(D):
     return np.insert(D, 0, values=1, axis=1)
+
 
 # -- 1.1 --
 # -- calculating sigmoid g(z)
@@ -27,14 +28,14 @@ def sigmoid(z):
 
     # z is vector
     elif z.ndim == 1:
-            # creating new vector
-            newZ = np.empty(z.size)
+        # creating new vector
+        newZ = np.empty(z.size)
 
-            # applying the sigmoid function on each cell
-            for i in range(z.size):
-                sig = 1 / (1 + np.exp(-z[i]))
-                newZ[i] = sig
-            return newZ
+        # applying the sigmoid function on each cell
+        for i in range(z.size - 1):
+            sig = 1 / (1 + np.exp(-z[i]))
+            newZ[i] = sig
+        return newZ
     # z is matrix
     else:
         # creating new matrix
@@ -48,7 +49,6 @@ def sigmoid(z):
         return newZ
 
 
-
 # -- 1.2 --
 def predictValue(Example, Hypothesis):
     # -- Multiplication of two Matrices --
@@ -59,36 +59,45 @@ def predictValue(Example, Hypothesis):
 # # -- 2.1 --
 def computeCostAndGradient(D, Y, Hypothesis):
     J = 0
+    n = D.shape[1]
     m = Y.shape[0]
-    Gradient = np.zeros(Hypothesis.shape)
+    print("n = ", n)
+    vector = np.vectorize(np.float_)
+    error = np.array([])
+    Gradient = np.zeros_like(Hypothesis)
 
-    for i in range(m):
+    for i in range(0 ,m):
         # prediction value
         h = predictValue(D[i], Hypothesis)
 
-        if np.any(h == 0) or np.any((1 - h) == 0):
-            h = 0.0001
+        h = np.where(h == 0, 0.0001, h)
+        h = np.where(h == 1, 0.9999, h)
+        sum = 0
+        for j in range(n - 1):
+            # calculating the price
+            J += (-Y[i] * np.log(h[j]) - (1 - Y[i]) * np.log(1 - h[j]))
 
-        # calculating the price
-        J += (-Y[i] * np.log(h) - (1 - Y[i]) * np.log(1 - h))
+            # calculating the error i
+            error = np.insert(error, j, h - Y[i])
 
-        # calculating the error i
-        error = h - Y[i]
-
+            # calculating sum for gradient
+            Gradient[j] += error[j] * D[i][j]
         # updating gradient matrix
-        for j in range(D.shape[i]):
-            Gradient[j] += np.multiply(error, D[i][j])
-
-        J /= m
         Gradient /= m
+        # print(Gradient)
+    np.set_printoptions(suppress=True)
+    print(Gradient)
+    J /= m
+    return vector(Gradient), J
 
-    return J, Gradient
 # # -- 2.2 --
 #
 # # -- 4 --
 def updateHypothsis(Hypothesis, alpha, Gradient):
     newHypo = Hypothesis - alpha * Gradient
     return newHypo
+
+
 # # -- 5 --
 # def gradientDescent(Data, Y, Hypothesis, alpha, max_iter, threshold):
 
@@ -101,18 +110,22 @@ def main():
     vector = np.vectorize(np.float_)
     D = vector(addOnesColumn(D))
 
-
     # -- 1 --
     # -- checking --
     # matrix1 = np.array([[1, 2, 3], [4, 5, 6]])
     # matrix2 = np.array([[-1, -2, -3], [-4, -5, -6]])
 
     Hypothesis = np.zeros(D.shape)
-    print(predictValue(D, Hypothesis))
+    # print(predictValue(D, Hypothesis))
 
     # -- 2.1 --
-    Hypothesis = np.array([-10, 0.8, 0.08])
-    print(computeCostAndGradient(D, Y, Hypothesis))
+    Hypothesis = np.array([0.08, 0.8, -10])
+    Gradient, J = computeCostAndGradient(D, Y, Hypothesis)
+    np.set_printoptions(suppress=True)
+    print(Gradient)
+    np.set_printoptions(suppress=True)
+    print(J)
+
 
 if __name__ == '__main__':
     main()
