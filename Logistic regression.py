@@ -1,4 +1,5 @@
 import numpy as np
+from plotDecisionBoundary import plotDecisionBoundary
 
 
 # Fany Manevich 206116725
@@ -61,15 +62,20 @@ def computeCostAndGradient(D, Y, Hypothesis):
     J = 0
     n = D.shape[1]
     m = Y.shape[0]
-    print("n = ", n)
+
     vector = np.vectorize(np.float_)
     error = np.array([])
     Gradient = np.zeros_like(Hypothesis)
+    # if lambda = 0 with regularization if lambda = 1000 without regularization
+    Lambda = 0
 
-    for i in range(0 ,m):
+
+
+
+    for i in range(0, m):
+
         # prediction value
         h = predictValue(D[i], Hypothesis)
-
         h = np.where(h == 0, 0.0001, h)
         h = np.where(h == 1, 0.9999, h)
         sum = 0
@@ -82,24 +88,70 @@ def computeCostAndGradient(D, Y, Hypothesis):
 
             # calculating sum for gradient
             Gradient[j] += error[j] * D[i][j]
-        # updating gradient matrix
+            # updating gradient matrix
         Gradient /= m
-        # print(Gradient)
-    np.set_printoptions(suppress=True)
-    print(Gradient)
     J /= m
+    # -- do regularization --
+    if Lambda != 0:
+        # Add regularization term to cost and gradient
+        reg = (Lambda / (2 * m)) * np.sum(Hypothesis[1:] ** 2)
+        J += reg
+        Gradient[1:] += (Lambda / m) * Hypothesis[1:]
+
     return vector(Gradient), J
 
-# # -- 2.2 --
-#
-# # -- 4 --
+# -- 2.2 --
+def computeRegularizedCostAndGradient(D, Y, Hypothesis, Lambda):
+    J = 0
+    n = D.shape[1]
+    m = Y.shape[0]
+
+    vector = np.vectorize(np.float_)
+    error = np.array([])
+    Gradient = np.zeros_like(Hypothesis)
+
+    for i in range(0, m):
+
+        # prediction value
+        h = predictValue(D[i], Hypothesis)
+        h = np.where(h == 0, 0.0001, h)
+        h = np.where(h == 1, 0.9999, h)
+        sum = 0
+
+        if j == 0:
+            break
+        # calculating the price
+        J += (-Y[i] * np.log(h[j]) - (1 - Y[i]) * np.log(1 - h[j]))
+
+            # calculating the error i
+            error = np.insert(error, j, h - Y[i])
+
+            # calculating sum for gradient
+            Gradient[j] += error[j] * D[i][j]
+            # updating gradient matrix
+            Gradient /= m
+    J /= m
+
+    # Add regularization term to cost and gradient
+    reg= (Lambda / (2 * m)) * np.sum(Hypothesis[1:] ** 2)
+    J += reg
+    Gradient[1:] += (Lambda / m) * Hypothesis[1:]
+
+    return vector(Gradient), J
+# -- 4 --
 def updateHypothsis(Hypothesis, alpha, Gradient):
     newHypo = Hypothesis - alpha * Gradient
     return newHypo
 
 
 # # -- 5 --
-# def gradientDescent(Data, Y, Hypothesis, alpha, max_iter, threshold):
+def gradientDescent(Data, Y, Hypothesis, alpha, max_iter, threshold):
+    alpha = 0.001
+    max_iter = 1000
+    threshold = 0.0001
+    theta = np.array([-8, 2, -0.5])
+    plotDecisionBoundary(theta, Data, Y)
+    # while iter < max_iter+1 and np.abs(cost[iter-2]-cost[iter-1]) > threshold:
 
 def main():
     # -- 0 --
@@ -119,13 +171,16 @@ def main():
     # print(predictValue(D, Hypothesis))
 
     # -- 2.1 --
-    Hypothesis = np.array([0.08, 0.8, -10])
+    Hypothesis = np.array([0.008, 0.8, -10])
     Gradient, J = computeCostAndGradient(D, Y, Hypothesis)
     np.set_printoptions(suppress=True)
     print(Gradient)
     np.set_printoptions(suppress=True)
     print(J)
 
+    # -- 2.2 --
+    Lambda = 0
+    Gradient, J = computeRegularizedCostAndGradient(D, Y, Hypothesis, Lambda)
 
 if __name__ == '__main__':
     main()
